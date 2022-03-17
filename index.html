@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Sample Site</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <style>
+        body {
+            padding-top: 50px;
+        }
+    </style>
+    <script>
+        function getContract() {
+            fetch(`./contract?platform=${document.getElementById('platform').value}&publicId=${document.getElementById('publicId').value}`)
+                .then(response => response.json())
+                .then(contract => {
+                    document.getElementById('contractTitle').innerText = contract.name;
+                    document.getElementById('contractLocation').innerText = contract.location;
+                    document.getElementById('contractBriefing').innerText = contract.description;
+                    document.getElementById('contractId').innerText = contract.internalId;
+                });
+        }
+    </script>
+</head>
+
+<body>
+    <div>
+        <select id="platform">
+            <option value="Epic">Epic</option>
+            <option value="PlayStation">PlayStation</option>
+            <option value="Stadia">Stadia</option>
+            <option value="Steam">Steam</option>
+            <option value="Switch">Switch</option>
+            <option value="Xbox">Xbox</option>
+        </select>
+        <input id="publicId" placeholder="Public Id" value="" />
+        <button onclick="getContract()">Get Contract</button>
+    </div>
+
+    <div class="container">
+        <div class="jumbotron">
+            <h1 id="contractTitle"></h1>
+            <h2>Location</h2>
+            <p id="contractLocation"></p>
+            <h2>Briefing</h2>
+            <p id="contractBriefing"></p>
+            <h2>Contract ID</h2>
+            <p id="contractId"></p>
+        </div>
+    </div>
+
+</body>
+
+</html>
