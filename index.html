@@ -3,51 +3,79 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Sample Site</title>
+    <title>Hitman Contract Search</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <style>
         body {
             padding-top: 50px;
         }
+
+        .hidden {
+            display: none;
+        }
+
+        .spinner {
+            position: absolute;
+            top: calc(50% - 5rem);
+            left: calc(50% - 5rem);
+            width: 10rem;
+            height: 10rem;
+        }
     </style>
     <script>
         function getContract() {
+            document.getElementById('spinner').classList.remove('hidden');
             fetch(`./contract?platform=${document.getElementById('platform').value}&publicId=${document.getElementById('publicId').value}`)
-                .then(response => response.json())
-                .then(contract => {
-                    document.getElementById('contractTitle').innerText = contract.name;
-                    document.getElementById('contractLocation').innerText = contract.location;
-                    document.getElementById('contractBriefing').innerText = contract.description;
-                    document.getElementById('contractId').innerText = contract.internalId;
+                .then(response => response.json().then(contract => ({ contract, status: response.status})))
+                .then(response => {
+                    document.getElementById('contractTitle').innerText = response.contract.name;
+                    document.getElementById('contractLocation').innerText = response.contract.location;
+                    document.getElementById('contractBriefing').innerText = response.contract.description;
+                    document.getElementById('contractId').innerText = response.contract.internalId;
+
+                    response.status === 200 ? document.getElementById('results').classList.remove('hidden') : document.getElementById('results').classList.add('hidden');
+                    response.status === 200 ? document.getElementById('results-hidden').classList.add('hidden') : document.getElementById('results-hidden').classList.remove('hidden');
+                    document.getElementById('spinner').classList.add('hidden');
                 });
         }
     </script>
 </head>
 
 <body>
-    <div>
-        <select id="platform">
-            <option value="Epic">Epic</option>
-            <option value="PlayStation">PlayStation</option>
-            <option value="Stadia">Stadia</option>
-            <option value="Steam">Steam</option>
-            <option value="Switch">Switch</option>
-            <option value="Xbox">Xbox</option>
-        </select>
-        <input id="publicId" placeholder="Public Id" value="" />
-        <button onclick="getContract()">Get Contract</button>
-    </div>
-
     <div class="container">
-        <div class="jumbotron">
-            <h1 id="contractTitle"></h1>
-            <h2>Location</h2>
+        <h1 style="text-align: center">Hitman Contract Search</h1>
+        <div style="text-align: center">
+            <select id="platform">
+                <option value="Epic">Epic</option>
+                <option value="PlayStation">PlayStation</option>
+                <option value="Stadia">Stadia</option>
+                <option value="Steam">Steam</option>
+                <option value="Switch">Switch</option>
+                <option value="Xbox">Xbox</option>
+            </select>
+            <input id="publicId" placeholder="Public Id" value="1-33-1384162-04" />
+            <button onclick="getContract()">Get Contract</button>
+        </div>
+
+        <br />
+
+        <div id="results" class="jumbotron hidden">
+            <h2 id="contractTitle"></h1>
+            <h3>Location</h2>
             <p id="contractLocation"></p>
-            <h2>Briefing</h2>
+            <h3>Briefing</h2>
             <p id="contractBriefing"></p>
-            <h2>Contract ID</h2>
+            <h3>Contract ID</h2>
             <p id="contractId"></p>
+        </div>
+
+        <div id="results-hidden" class="jumbotron hidden" style="text-align: center;">
+            <h1>No contract found</h1>
+        </div>
+
+        <div id="spinner" class="spinner-border spinner hidden" role="status">
+            <span class="sr-only">Loading...</span>
         </div>
     </div>
 
