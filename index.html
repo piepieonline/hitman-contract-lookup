@@ -27,7 +27,7 @@
         function getContract() {
             document.getElementById('spinner').classList.remove('hidden');
             fetch(`./contract?platform=${document.getElementById('platform').value}&publicId=${document.getElementById('publicId').value}`)
-                .then(response => response.json().then(contract => ({ contract, status: response.status})))
+                .then(response => response.json().then(contract => ({ contract, status: response.status })))
                 .then(response => {
                     document.getElementById('contractTitle').innerText = response.contract.name;
                     document.getElementById('contractLocation').innerText = response.contract.location;
@@ -39,6 +39,15 @@
                     document.getElementById('spinner').classList.add('hidden');
                 });
         }
+    </script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-W5N9VXGY5X"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-W5N9VXGY5X');
     </script>
 </head>
 
@@ -67,23 +76,36 @@
         <br />
 
         <div id="results" class="jumbotron hidden">
-            <h2 id="contractTitle"></h1>
-            <h3>Location</h2>
+            <h2 id="contractTitle">
+            </h2>
+            <h3>Location
+            </h3>
             <p id="contractLocation"></p>
-            <h3>Briefing</h2>
+            <h3>Briefing</h3>
             <p id="contractBriefing"></p>
-            <h3>Contract ID</h2>
+            <h3>Contract ID</h3>
             <p id="contractId"></p>
         </div>
 
         <div id="results-hidden" class="jumbotron hidden" style="text-align: center;">
             <h1>No contract found</h1>
             <br />
-            <p>The contract might not exist, or the bot might not be able to connect to the selected platform right now.<br /><a href="https://discord.gg/FVxTKdU" target="_blank">Jump into Frote's Speedrun Community Discord</a> to check the bot status.</p>
+            <p>
+                The contract might not exist, or the bot might not be able to connect to the selected platform right
+                now.
+                <br />
+                <a href="https://discord.gg/FVxTKdU" target="_blank">Jump into Frote's Speedrun Community Discord</a> to
+                check the bot status.
+            </p>
         </div>
 
-        <div style="text-align: center;">Contract search is powered by <a href="https://www.hitmaps.com/" target="_blank">HITMAPS</a></div>
-        <div style="text-align: center;">Not working? <a href="https://discord.gg/FVxTKdU" target="_blank">Jump into Frote's Speedrun Community Discord</a> to check the bot status</div>
+        <div style="text-align: center;">
+            Contract search is powered by <a href="https://www.hitmaps.com/" target="_blank">HITMAPS</a>
+        </div>
+        <div style="text-align: center;">
+            Not working? <a href="https://discord.gg/FVxTKdU" target="_blank">Jump into Frote's Speedrun Community
+                Discord</a> to check the bot status
+        </div>
     </div>
 
 </body>
