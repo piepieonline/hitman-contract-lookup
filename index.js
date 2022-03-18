@@ -5,7 +5,7 @@ const path = require('path');
 require('dotenv').config();
 
 const app = express();
-const port = process.env.SERVER_PORT;
+const port = process.env.PORT;
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '/index.html'));
