@@ -44,18 +44,24 @@
 
 <body>
     <div class="container">
+        <div id="spinner" class="spinner-border spinner hidden" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
         <h1 style="text-align: center">Hitman Contract Search</h1>
         <div style="text-align: center">
-            <select id="platform">
+            <select id="platform" style="height: 35px;">
                 <option value="Epic">Epic</option>
+                <option value="Steam">Steam</option>
                 <option value="PlayStation">PlayStation</option>
                 <option value="Stadia">Stadia</option>
-                <option value="Steam">Steam</option>
-                <option value="Switch">Switch</option>
-                <option value="Xbox">Xbox</option>
+                <!--
+                    These don't work on the server yet :(
+                    <option value="Switch">Switch</option>
+                    <option value="Xbox">Xbox</option>
+                -->
             </select>
-            <input id="publicId" placeholder="Public Id" value="1-33-1384162-04" />
-            <button onclick="getContract()">Get Contract</button>
+            <input id="publicId" placeholder="Public Id" value="1-33-1384162-04"  style="line-height: 30px;" />
+            <button onclick="getContract()" class="btn btn-primary" style="margin-top: -6px;">Get Contract</button>
         </div>
 
         <br />
@@ -74,9 +80,7 @@
             <h1>No contract found</h1>
         </div>
 
-        <div id="spinner" class="spinner-border spinner hidden" role="status">
-            <span class="sr-only">Loading...</span>
-        </div>
+        <div style="text-align: center;">Contract search is powered by <a href="https://www.hitmaps.com/" target="_blank">HITMAPS</a></div>
     </div>
 
 </body>
