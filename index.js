@@ -1,11 +1,11 @@
 
-const express = require('express')
+const express = require('express');
 const fetch = require('node-fetch');
 const path = require('path');
 require('dotenv').config();
 
-const app = express()
-const port = 80
+const app = express();
+const port = process.env.SERVER_PORT;
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '/index.html'));
@@ -26,8 +26,8 @@ app.get('/contract', async (req, res) => {
             .then(response => console.log(response))
             .catch(err => console.error(err));
 
-        const response = await fetch(`https://ioiapi.hitmaps.com/api/contracts?platform=${req.query.platform}&publicId=${req.query.publicId}`, options)
-        const json = await response.json()
+        const response = await fetch(`https://ioiapi.hitmaps.com/api/contracts?platform=${req.query.platform}&publicId=${req.query.publicId}`, options);
+        const json = await response.json();
 
         res.status(response.status).send(json);
     } catch (error) {
