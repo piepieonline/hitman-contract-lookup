@@ -1,5 +1,6 @@
 
 const express = require('express');
+var cors = require('cors')
 const fetch = require('node-fetch');
 const path = require('path');
 require('dotenv').config();
@@ -11,7 +12,7 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '/index.html'));
 });
 
-app.get('/contract', async (req, res) => {
+app.get('/contract', cors(), async (req, res) => {
     try {
         const options = { 
             method: 'GET', 
