@@ -26,7 +26,7 @@
     <script>
         function getContract() {
             const hardcodedBaseURL = 'https://hitman-contract-lookup.onrender.com';
-            const baseUrl = ['localhost:8080', 'piepieonline.com'].includes(window.location.host) ? hardcodedBaseURL : '.';
+            const baseUrl = ['localhost:8080', 'www.piepieonline.com'].includes(window.location.host) ? hardcodedBaseURL : '.';
 
             document.getElementById('spinner').classList.remove('hidden');
             fetch(`${baseUrl}/contract?platform=${document.getElementById('platform').value}&publicId=${document.getElementById('publicId').value}`)
