@@ -37,8 +37,25 @@
                     document.getElementById('contractBriefing').innerText = response.contract.description;
                     document.getElementById('contractId').innerText = response.contract.internalId;
 
-                    response.status === 200 ? document.getElementById('results').classList.remove('hidden') : document.getElementById('results').classList.add('hidden');
-                    response.status === 200 ? document.getElementById('results-hidden').classList.add('hidden') : document.getElementById('results-hidden').classList.remove('hidden');
+                    if(response.status === 200)
+                    {
+                        document.getElementById('results').classList.remove('hidden');
+                        document.getElementById('results-noauth').classList.add('hidden');
+                        document.getElementById('results-missing').classList.add('hidden');
+                    }
+                    else if(response.status === 407)
+                    {
+                        document.getElementById('results').classList.add('hidden');
+                        document.getElementById('results-noauth').classList.remove('hidden');
+                        document.getElementById('results-missing').classList.add('hidden');
+                    }
+                    else
+                    {
+                        document.getElementById('results').classList.add('hidden');
+                        document.getElementById('results-noauth').classList.add('hidden');
+                        document.getElementById('results-missing').classList.remove('hidden');
+                    }
+
                     document.getElementById('spinner').classList.add('hidden');
                 });
         }
@@ -65,11 +82,11 @@
                 <option value="Epic">Epic</option>
                 <option value="Steam">Steam</option>
                 <option value="PlayStation">PlayStation</option>
+                <option value="Xbox">Xbox</option>
                 <option value="Stadia">Stadia</option>
                 <!--
                     These don't work on the server yet :(
                     <option value="Switch">Switch</option>
-                    <option value="Xbox">Xbox</option>
                 -->
             </select>
             <input id="publicId" placeholder="Public Id" value="" style="line-height: 30px;" />
@@ -90,12 +107,25 @@
             <p id="contractId"></p>
         </div>
 
-        <div id="results-hidden" class="jumbotron hidden" style="text-align: center;">
+        <div id="results-missing" class="jumbotron hidden" style="text-align: center;">
             <h1>No contract found</h1>
             <br />
             <p>
                 The contract might not exist, or the bot might not be able to connect to the selected platform right
                 now.
+                <br />
+                <a href="https://discord.gg/FVxTKdU" target="_blank">Jump into Frote's Speedrun Community Discord</a> to
+                check the bot status.
+            </p>
+        </div>
+
+        <div id="results-noauth" class="jumbotron hidden" style="text-align: center;">
+            <h1>No authentication</h1>
+            <br />
+            <p>
+                The bot is not logged into the selected platform right now.
+                <br />
+                If you can and are willing, help keep the bot active: <a href="https://bot.hitmaps.com/">https://bot.hitmaps.com/</a>
                 <br />
                 <a href="https://discord.gg/FVxTKdU" target="_blank">Jump into Frote's Speedrun Community Discord</a> to
                 check the bot status.
