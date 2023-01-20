@@ -50,7 +50,7 @@
             return `
                 <tr class="leaderboard-entry ${entry.detailedScore.silentAssassin ? 'sa' : 'no-sa'} ${rank < 20 ? 'top' : 'rest hidden'}">
                     <td>${entry.compositeRank}</td>
-                    <td><img src="./images/${entry.platform}.svg" style="height: 18px;"/> ${entry.playerName}</td>
+                    <td><img src="./images/${entry.platform.toLowerCase()}.svg" style="height: 18px;"/> ${entry.playerName}</td>
                     <td>${new Array(entry.detailedScore.starCount).fill('★').join('')}</td>
                     <td><img src="./images/${entry.detailedScore.silentAssassin ? 'green' : 'red'}guns.png" style="height: 18px;"/> ${entry.totalScore}</td>
                     <td>${entry.elapsedTime}</td>
