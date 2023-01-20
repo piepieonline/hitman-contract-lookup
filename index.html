@@ -22,41 +22,102 @@
             width: 10rem;
             height: 10rem;
         }
+
+        .server-status-container {
+            display: flex;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .server-status-container thead {
+            padding-top: 5px;
+        }
+
+        .server-status-container tbody {
+            padding-bottom: 5px;
+            font-size: larger;
+        }
+
+        .server-status-container td {
+            padding: 0 5px;
+        }
     </style>
     <script>
-        function getContract() {
-            const hardcodedBaseURL = 'https://hitman-contract-lookup.onrender.com';
-            const baseUrl = ['localhost:8080', 'www.piepieonline.com'].includes(window.location.host) ? hardcodedBaseURL : '.';
+        const hardcodedBaseURL = 'https://hitman-contract-lookup.onrender.com';
+        const baseUrl = ['localhost:8080', 'www.piepieonline.com'].includes(window.location.host) ? hardcodedBaseURL : '.';
 
+        function createLeaderboardEntry(entry, rank) {
+            return `
+                <tr class="leaderboard-entry ${entry.detailedScore.silentAssassin ? 'sa' : 'no-sa'} ${rank < 20 ? 'top' : 'rest hidden'}">
+                    <td>${entry.compositeRank}</td>
+                    <td><img src="./images/${entry.platform}.svg" style="height: 18px;"/> ${entry.playerName}</td>
+                    <td>${new Array(entry.detailedScore.starCount).fill('★').join('')}</td>
+                    <td><img src="./images/${entry.detailedScore.silentAssassin ? 'green' : 'red'}guns.png" style="height: 18px;"/> ${entry.totalScore}</td>
+                    <td>${entry.elapsedTime}</td>
+                </tr>
+            `;
+        }
+
+        function getContract() {
             document.getElementById('spinner').classList.remove('hidden');
-            fetch(`${baseUrl}/contract?platform=${document.getElementById('platform').value}&publicId=${document.getElementById('publicId').value}`)
+            fetch(`${baseUrl}/contract?platform=${document.getElementById('platform').value.toLowerCase()}&publicId=${document.getElementById('publicId').value}`)
                 .then(response => response.json().then(contract => ({ contract, status: response.status })))
                 .then(response => {
-                    document.getElementById('contractTitle').innerText = response.contract.name;
-                    document.getElementById('contractLocation').innerText = response.contract.location;
-                    document.getElementById('contractBriefing').innerText = response.contract.description;
-                    document.getElementById('contractId').innerText = response.contract.internalId;
-
-                    if(response.status === 200)
-                    {
+                    if (response.status === 200) {
                         document.getElementById('results').classList.remove('hidden');
                         document.getElementById('results-noauth').classList.add('hidden');
                         document.getElementById('results-missing').classList.add('hidden');
+
+                        document.getElementById('contractTitle').innerText = response.contract.name;
+                        document.getElementById('contractLocation').innerText = response.contract.location;
+                        document.getElementById('contractBriefing').innerText = response.contract.description;
+                        document.getElementById('contractId').innerText = response.contract.internalId;
+
+                        if (response.contract?.leaderboard?.entries) {
+                            const contractPlatforms = response.contract.leaderboard.entries.map(entry => entry.platform).filter((value, index, self) => self.indexOf(value) === index);
+                            document.getElementById('leaderboard-platforms').innerText = contractPlatforms.join(', ');
+
+                            let leaderboardEntries = '';
+                            for (i = 0; i < response.contract.leaderboard.entries.length; i++) {
+                                leaderboardEntries += createLeaderboardEntry(response.contract.leaderboard.entries[i], i);
+                            }
+                            document.getElementById('leaderboard-entries').innerHTML = leaderboardEntries;
+                            document.getElementById('contract-leaderboard').classList.remove('hidden');
+                        }
+                        else {
+                            document.getElementById('contract-leaderboard').classList.add('hidden');
+                        }
+
                     }
-                    else if(response.status === 407)
-                    {
+                    else if (response.status === 407) {
                         document.getElementById('results').classList.add('hidden');
                         document.getElementById('results-noauth').classList.remove('hidden');
                         document.getElementById('results-missing').classList.add('hidden');
                     }
-                    else
-                    {
+                    else {
                         document.getElementById('results').classList.add('hidden');
                         document.getElementById('results-noauth').classList.add('hidden');
                         document.getElementById('results-missing').classList.remove('hidden');
                     }
 
                     document.getElementById('spinner').classList.add('hidden');
+                });
+        }
+
+        function toggleFullList(evt) {
+            Array.from(document.getElementsByClassName('rest')).forEach(ele => ele.classList.toggle('hidden'))
+        }
+
+        function checkServerStatus() {
+            fetch(`${baseUrl}/serverStatus`)
+                .then(response => response.json().then(serverStatus => ({ serverStatus, status: response.status })))
+                .then(response => {
+                    if (response.status === 200) {
+                        const serverStatusKeys = Object.keys(response.serverStatus);
+                        let statusHeaderRow = `<thead><tr>${serverStatusKeys.map(platform => `<td><img src="./images/${platform}.svg" style="height: 18px;"/></td>`).join('')}</tr></thead>`;
+                        let statusContentRow = `<tbody><tr>${serverStatusKeys.map(platform => `<td>${response.serverStatus[platform] ? '<span style="color: green">✓</span>' : '<span style="color: red">X</span>'}</td>`).join('')}</tr></tbody>`;
+                        document.getElementById('server-status').innerHTML = statusHeaderRow + statusContentRow;
+                    }
                 });
         }
     </script>
@@ -77,16 +138,24 @@
             <span class="sr-only">Loading...</span>
         </div>
         <h1 style="text-align: center">Hitman Contract Search</h1>
+        <div class="server-status-container">
+            <table id="server-status">
+                
+            </table>
+        </div>
         <div style="text-align: center">
             <select id="platform" style="height: 35px;">
-                <option value="Epic">Epic</option>
-                <option value="Steam">Steam</option>
-                <option value="PlayStation">PlayStation</option>
-                <option value="Xbox">Xbox</option>
-                <option value="Stadia">Stadia</option>
+                <option value="epic">Epic</option>
+                <option value="steam">Steam</option>
+                <option value="playstation">PlayStation</option>
+                <option value="xbox">Xbox</option>
+                <!--
+                    Shutdown
+                    <option value="stadia">Stadia</option>
+                -->
                 <!--
                     These don't work on the server yet :(
-                    <option value="Switch">Switch</option>
+                    <option value="switch">Switch</option>
                 -->
             </select>
             <input id="publicId" placeholder="Public Id" value="" style="line-height: 30px;" />
@@ -95,16 +164,39 @@
 
         <br />
 
-        <div id="results" class="jumbotron hidden">
-            <h2 id="contractTitle">
-            </h2>
-            <h3>Location
-            </h3>
-            <p id="contractLocation"></p>
-            <h3>Briefing</h3>
-            <p id="contractBriefing"></p>
-            <h3>Contract ID</h3>
-            <p id="contractId"></p>
+        <div id="results" class="hidden">
+            <div class="jumbotron contract-details">
+                <h2 id="contractTitle">
+                </h2>
+                <h3>Location
+                </h3>
+                <p id="contractLocation"></p>
+                <h3>Briefing</h3>
+                <p id="contractBriefing"></p>
+                <h3>Contract ID</h3>
+                <p id="contractId"></p>
+            </div>
+            <div class="jumbotron contract-leaderboard" id="contract-leaderboard">
+                <h2>Leaderboard</h2>
+                <p>Checked platforms: <span id="leaderboard-platforms"></span></p>
+                <table style="width: 100%;">
+                    <thead>
+                        <tr>
+                            <td>Rank</td>
+                            <td>Name</td>
+                            <td>Stars</td>
+                            <td>Score</td>
+                            <td>Time</td>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboard-entries">
+
+                    </tbody>
+                </table>
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="btn btn-secondary" onclick="toggleFullList()">Toggle remaining entries</button>
+                </div>
+            </div>
         </div>
 
         <div id="results-missing" class="jumbotron hidden" style="text-align: center;">
@@ -125,7 +217,8 @@
             <p>
                 The bot is not logged into the selected platform right now.
                 <br />
-                If you can and are willing, help keep the bot active: <a href="https://bot.hitmaps.com/">https://bot.hitmaps.com/</a>
+                If you can and are willing, help keep the bot active: <a
+                    href="https://bot.hitmaps.com/">https://bot.hitmaps.com/</a>
                 <br />
                 <a href="https://discord.gg/FVxTKdU" target="_blank">Jump into Frote's Speedrun Community Discord</a> to
                 check the bot status.
@@ -141,6 +234,29 @@
         </div>
     </div>
 
+    <script>
+        const platformRemap = {
+            epic: 'epic',
+            steam: 'steam',
+            playstation: 'playstation',
+            xbox: 'xbox',
+            e: 'epic',
+            s: 'steam',
+            p: 'playstation',
+            ps: 'playstation',
+            x: 'xbox'
+        }
+
+        let platform = new URL(window.location.href).searchParams.get('platform');
+        let publicId = new URL(window.location.href).searchParams.get('publicId');
+        if (platform && publicId) {
+            document.getElementById('platform').value = platformRemap[platform.toLowerCase()];
+            document.getElementById('publicId').value = publicId;
+            getContract();
+        }
+        document.getElementById('server-status').innerHTML = `<tr><td>Server Status Loading...</td></tr>`;
+        checkServerStatus();
+    </script>
 </body>
 
 </html>
