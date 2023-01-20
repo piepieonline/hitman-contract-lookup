@@ -58,6 +58,12 @@
             `;
         }
 
+        function createCreatorHTML(contract) {
+            return `
+                Contract by ${contract.creator.displayName} <img src="./images/${contract.platform.toLowerCase()}.svg" style="height: 18px;"/>
+            `;
+        }
+
         function getContract() {
             document.getElementById('spinner').classList.remove('hidden');
             fetch(`${baseUrl}/contract?platform=${document.getElementById('platform').value.toLowerCase()}&publicId=${document.getElementById('publicId').value}`)
@@ -72,11 +78,9 @@
                         document.getElementById('contractLocation').innerText = response.contract.location;
                         document.getElementById('contractBriefing').innerText = response.contract.description;
                         document.getElementById('contractId').innerText = response.contract.internalId;
+                        document.getElementById('creator').innerHTML = createCreatorHTML(response.contract);
 
                         if (response.contract?.leaderboard?.entries) {
-                            const contractPlatforms = response.contract.leaderboard.entries.map(entry => entry.platform).filter((value, index, self) => self.indexOf(value) === index);
-                            document.getElementById('leaderboard-platforms').innerText = contractPlatforms.join(', ');
-
                             let leaderboardEntries = '';
                             for (i = 0; i < response.contract.leaderboard.entries.length; i++) {
                                 leaderboardEntries += createLeaderboardEntry(response.contract.leaderboard.entries[i], i);
@@ -168,17 +172,16 @@
             <div class="jumbotron contract-details">
                 <h2 id="contractTitle">
                 </h2>
-                <h3>Location
-                </h3>
+                <h3>Contract ID</h3>
+                <p><span id="contractId"></span> - Use the <a href="https://www.nexusmods.com/hitman3/mods/317">Cross Platform Contracts</a> mod to play this on PC.</p>
+                <h3>Location</h3>
                 <p id="contractLocation"></p>
                 <h3>Briefing</h3>
                 <p id="contractBriefing"></p>
-                <h3>Contract ID</h3>
-                <p id="contractId"></p>
+                <p id="creator"></p>
             </div>
             <div class="jumbotron contract-leaderboard" id="contract-leaderboard">
                 <h2>Leaderboard</h2>
-                <p>Checked platforms: <span id="leaderboard-platforms"></span></p>
                 <table style="width: 100%;">
                     <thead>
                         <tr>
